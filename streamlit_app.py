@@ -3,10 +3,6 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
-import locale
-
-# Configurar locale para formato numérico
-locale.setlocale(locale.LC_NUMERIC, 'es_ES.UTF-8')
 
 # Función para formatear números con abreviaciones
 def format_number(x):
@@ -20,6 +16,10 @@ def format_number(x):
         return f'{x/1000:.0f}k'
     else:
         return f'{x}'
+
+# Función para formatear valores monetarios
+def format_currency(value):
+    return f"{value:,.0f}".replace(",", "@").replace(".", ",").replace("@", ".")
 
 # Cargar los datos
 @st.cache_data
@@ -83,7 +83,7 @@ fig.add_trace(go.Bar(
     x=df_grouped['Año'],
     y=df_grouped['Monto total'],
     name='Monto Total',
-    marker_color='#3498DB',  # Azul más brillante
+    marker_color='#3498DB',
     yaxis='y1',
     text=[format_number(x) for x in df_grouped['Monto total']],
     textposition='inside',
@@ -96,7 +96,7 @@ fig.add_trace(go.Scatter(
     y=df_grouped['Cantidad unitaria'],
     name='Cantidad Unitaria',
     mode='lines+markers',
-    line=dict(color='#F1C40F', width=2),  # Amarillo brillante
+    line=dict(color='#F1C40F', width=2),
     yaxis='y2',
     text=[format_number(x) for x in df_grouped['Cantidad unitaria']],
     textposition='top center'
@@ -107,7 +107,7 @@ fig.update_layout(
     title='Monto Total y Cantidad Comprada por Año',
     xaxis=dict(
         title='Año',
-        dtick=1,  # Mostrar todos los años
+        dtick=1,
         type='category'
     ),
     yaxis=dict(
@@ -149,12 +149,12 @@ grafico_torta = px.pie(
     names='Proveedor',
     values='Monto total',
     title='Distribución de Compras por Empresa',
-    color_discrete_sequence=px.colors.qualitative.Set3  # Paleta más brillante
+    color_discrete_sequence=px.colors.qualitative.Set3
 )
 
 grafico_torta.update_traces(
     texttemplate='%{percent:.1%}',
-    hovertemplate='%{label}<br>Monto: ' + '%{value:,.0f}'.replace(',', '@').replace('.', ',').replace('@', '.') + ' CLP<br>%{percent:.1%}'
+    hovertemplate='%{label}<br>Monto: ' + '%{value:,.0f} CLP<br>%{percent:.1%}'
 )
 
 grafico_torta.update_layout(
@@ -184,13 +184,13 @@ precio_ticks = np.linspace(0, max_precio, 6)
 fig_precios.update_traces(
     text=[format_number(x) for x in df_precios['Precio promedio']],
     textposition='inside',
-    marker_color='#2E86C1',  # Mismo azul que el primer gráfico
+    marker_color='#2E86C1',
     insidetextfont=dict(color='white')
 )
 
 fig_precios.update_layout(
     xaxis=dict(
-        dtick=1,  # Mostrar todos los años
+        dtick=1,
         type='category'
     ),
     yaxis=dict(
